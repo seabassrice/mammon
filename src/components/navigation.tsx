@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+import Image from "next/image";
+import { useTheme } from "next-themes";
 import {
   LayoutDashboard,
   Package,
@@ -25,6 +27,7 @@ const navItems = [
 
 export function Navigation() {
   const pathname = usePathname();
+  const { resolvedTheme } = useTheme();
   const [session, setSession] = useState<{ user: { id: string; name: string; email: string } } | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -45,7 +48,13 @@ export function Navigation() {
       {/* Desktop sidebar */}
       <aside className="hidden md:flex md:flex-col md:w-60 md:fixed md:inset-y-0 bg-card border-r z-30">
         <div className="flex items-center gap-2 px-6 h-16 border-b">
-          <Package className="h-6 w-6 text-primary" />
+          <Image
+            src={resolvedTheme === "dark" ? "/icons/logo-dark.png" : "/icons/logo-light.png"}
+            alt="Mammon"
+            width={32}
+            height={32}
+            className="shrink-0"
+          />
           <span className="font-bold text-lg">Mammon</span>
         </div>
         <nav className="flex-1 px-4 py-4 space-y-1">
@@ -128,10 +137,36 @@ export function Navigation() {
       <header className="md:hidden fixed top-0 inset-x-0 bg-background/80 backdrop-blur-md border-b z-30">
         <div className="flex items-center justify-between h-14 px-4">
           <div className="flex items-center gap-2">
-            <Package className="h-5 w-5" />
+            <Image
+              src={resolvedTheme === "dark" ? "/icons/logo-dark.png" : "/icons/logo-light.png"}
+              alt="Mammon"
+              width={28}
+              height={28}
+              className="shrink-0"
+            />
             <span className="font-bold">Mammon</span>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            {!loading && !session && (
+              <Link
+                href="/login"
+                className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-primary hover:bg-accent transition-colors"
+              >
+                <LogIn className="h-4 w-4" />
+                登录
+              </Link>
+            )}
+            {!loading && session && (
+              <button
+                onClick={handleLogout}
+                className="p-1.5 rounded-md hover:bg-accent text-muted-foreground hover:text-accent-foreground transition-colors"
+                title="退出登录"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            )}
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 

@@ -3,6 +3,8 @@
 import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
+import { useTheme } from "next-themes";
 import { authClient } from "@/lib/auth-client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,6 +14,7 @@ import { Label } from "@/components/ui/label";
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { resolvedTheme } = useTheme();
   const redirectTo = searchParams.get("redirect") || "/assets";
 
   const [email, setEmail] = useState("");
@@ -55,6 +58,15 @@ function LoginForm() {
     <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
+          <div className="flex justify-center mb-4">
+            <Image
+              src={resolvedTheme === "dark" ? "/icons/logo-dark.png" : "/icons/logo-light.png"}
+              alt="Mammon"
+              width={96}
+              height={96}
+              priority
+            />
+          </div>
           <CardTitle className="text-2xl">登录</CardTitle>
           <CardDescription>
             使用邮箱和密码登录 Mammon

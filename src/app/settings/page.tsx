@@ -185,10 +185,15 @@ export default function SettingsPage() {
           <CardTitle>关于 Mammon</CardTitle>
           <CardDescription>个人资产记录应用</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-2 text-sm text-muted-foreground">
-          <p>版本: 1.0.0</p>
-          <p>数据存储: 本地 IndexedDB</p>
-          <p>所有数据仅保存在您的设备上，不会上传到任何服务器</p>
+        <CardContent className="space-y-3 text-sm text-muted-foreground">
+          <p>版本: {process.env.NEXT_PUBLIC_APP_VERSION || "2.0"}</p>
+          <div>
+            <p className="font-medium text-foreground mb-1">数据存储</p>
+            <ul className="list-disc list-inside space-y-1">
+              <li>登录后：数据存储在 Vercel Postgres（Neon）云端数据库中，按用户隔离</li>
+              <li>未登录：数据暂存在浏览器本地 IndexedDB 中</li>
+            </ul>
+          </div>
         </CardContent>
       </Card>
     </div>

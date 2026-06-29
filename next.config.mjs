@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
+import { readFileSync } from 'fs';
+const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
+
 const nextConfig = {
+  env: {
+    NEXT_PUBLIC_APP_VERSION: pkg.version,
+  },
   // PWA headers
   async headers() {
     return [

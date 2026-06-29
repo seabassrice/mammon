@@ -1,6 +1,6 @@
 {
-  "name": "ownit",
-  "version": "1.0.0",
+  "name": "mammon",
+  "version": "2.0",
   "private": true,
   "description": "Mammon - 个人资产记录应用，支持实物、游戏、订阅服务管理",
   "scripts": {

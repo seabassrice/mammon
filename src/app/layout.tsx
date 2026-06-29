@@ -33,6 +33,10 @@ export default function RootLayout({
     <html lang="zh-CN" suppressHydrationWarning>
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        {/* Favicon: light/dark mode switching */}
+        <link rel="icon" href="/icons/logo-dark.png" media="(prefers-color-scheme: dark)" />
+        <link rel="icon" href="/icons/logo-light.png" media="(prefers-color-scheme: light)" />
+        <link rel="icon" href="/icons/logo-light.png" />
       </head>
       <body className="font-sans antialiased">
         <ThemeProvider
