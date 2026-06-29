@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mammon 🏦
 
-## Getting Started
+个人资产管理应用，帮助你追踪和管理你的实物资产、数字游戏/虚拟物品和订阅服务。
 
-First, run the development server:
+## 功能
+
+- **仪表盘** — 资产概览、价值统计、订阅到期提醒
+- **资产管理** — 添加、编辑、查看、删除资产
+- **资产分类** — 实物、数字游戏/虚拟物品、订阅
+- **状态追踪** — 在用、闲置、转卖、丢弃、赠送
+- **订阅管理** — 月付/年付/自定义周期，到期提醒
+- **数据导入/导出** — JSON 备份与恢复
+- **明暗主题** — 支持亮色/暗色模式切换
+- **全本地存储** — 所有数据保存在浏览器 IndexedDB，不上传服务器
+
+## 技术栈
+
+- [Next.js 14](https://nextjs.org/) (App Router)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [shadcn/ui](https://ui.shadcn.com/)
+- [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) (via [idb](https://www.npmjs.com/package/idb))
+- [next-themes](https://github.com/pacocoursey/next-themes)
+
+## 本地开发
 
 ```bash
+cd mammon
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+然后在浏览器打开 [http://localhost:3000](http://localhost:3000)。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 构建
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run build
+npm start
+```

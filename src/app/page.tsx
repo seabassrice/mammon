@@ -1,101 +1,200 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { getAllAssets } from "@/lib/db";
+import type { Asset, SubscriptionAsset } from "@/lib/types";
+import { DashboardCharts } from "@/components/dashboard-charts";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  formatCurrency,
+  formatDate,
+  getDaysUntil,
+  isExpiringSoon,
+  getCycleLabel,
+} from "@/lib/utils";
+import {
+  Plus,
+  Calendar,
+  Package,
+  Gamepad2,
+  Repeat,
+  AlertCircle,
+} from "lucide-react";
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+export default function DashboardPage() {
+  const [assets, setAssets] = useState<Asset[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadAssets() {
+      try {
+        const data = await getAllAssets();
+        setAssets(data);
+      } catch (error) {
+        console.error("加载资产失败:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadAssets();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">加载中...</p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+    );
+  }
+
+  // 即将到期的订阅（排除永久订阅）
+  const expiringSubscriptions = assets.filter((a) => {
+    if (a.type !== "subscription") return false;
+    if (a.billingCycle === "once") return false;
+    const sub = a as SubscriptionAsset;
+    return isExpiringSoon(sub.nextBillingDate, 7);
+  }) as SubscriptionAsset[];
+
+  // 最近添加的资产
+  const recentAssets = [...assets]
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )
+    .slice(0, 5);
+
+  return (
+    <div className="space-y-8">
+      {/* 头部 */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">概览</h1>
+          <p className="text-muted-foreground mt-1">
+            欢迎使用 Mammon，管理你的所有资产
+          </p>
+        </div>
+        <Link href="/add">
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            新增资产
+          </Button>
+        </Link>
+      </div>
+
+      {/* 空状态 */}
+      {assets.length === 0 ? (
+        <Card className="text-center py-12">
+          <CardContent>
+            <Package className="h-16 w-16 mx-auto text-muted-foreground/50" />
+            <h3 className="mt-4 text-lg font-semibold">还没有任何资产</h3>
+            <p className="mt-2 text-muted-foreground">
+              点击&ldquo;新增资产&rdquo;开始记录你的第一件物品
+            </p>
+            <Link href="/add" className="mt-4 inline-block">
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                新增资产
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      ) : (
+        <>
+          {/* 图表和统计 */}
+          <DashboardCharts assets={assets} />
+
+          {/* 即将到期的订阅 */}
+          {expiringSubscriptions.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <AlertCircle className="h-5 w-5 text-orange-500" />
+                  即将到期的订阅
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {expiringSubscriptions.map((sub) => {
+                    const days = getDaysUntil(sub.nextBillingDate);
+                    return (
+                      <Link
+                        key={sub.id}
+                        href={`/assets/${sub.id}`}
+                        className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Calendar className="h-5 w-5 text-muted-foreground" />
+                          <div>
+                            <div className="font-medium">{sub.name}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {getCycleLabel(sub.billingCycle)} ·{" "}
+                              {formatCurrency(sub.price)}
+                            </div>
+                          </div>
+                        </div>
+                        <Badge
+                          variant={days <= 3 ? "destructive" : "secondary"}
+                        >
+                          {days === 0
+                            ? "今天到期"
+                            : `${days} 天后到期`}
+                        </Badge>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* 最近添加 */}
+          {recentAssets.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>最近添加</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {recentAssets.map((asset) => (
+                    <Link
+                      key={asset.id}
+                      href={`/assets/${asset.id}`}
+                      className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        {asset.type === "physical" && (
+                          <Package className="h-5 w-5 text-zinc-500" />
+                        )}
+                        {asset.type === "digital_game" && (
+                          <Gamepad2 className="h-5 w-5 text-purple-500" />
+                        )}
+                        {asset.type === "subscription" && (
+                          <Repeat className="h-5 w-5 text-blue-500" />
+                        )}
+                        <div>
+                          <div className="font-medium">{asset.name}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {asset.category} · {formatCurrency(asset.price)}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {formatDate(asset.createdAt)}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </>
+      )}
     </div>
   );
 }
