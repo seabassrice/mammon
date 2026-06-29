@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
-import { getAllAssets } from "@/lib/db";
+import { getAllAssets } from "@/lib/data-service";
 import type { Asset } from "@/lib/types";
 import { AssetCard } from "@/components/asset-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

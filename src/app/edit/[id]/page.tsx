@@ -6,7 +6,7 @@ import { AssetForm } from "@/components/asset-form";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { getAssetById } from "@/lib/db";
+import { getAssetById } from "@/lib/data-service";
 
 export default function EditAssetPage() {
   const params = useParams();

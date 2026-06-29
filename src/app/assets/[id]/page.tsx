@@ -7,7 +7,7 @@ import {
   getAssetById,
   deleteAsset,
   updateAsset,
-} from "@/lib/db";
+} from "@/lib/data-service";
 import type {
   Asset,
   PhysicalAsset,

@@ -6,7 +6,7 @@ import { Trash2, Package, Gamepad2, Repeat, Calendar, CheckCircle, XCircle } fro
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { deleteAsset } from "@/lib/db";
+import { deleteAsset } from "@/lib/data-service";
 import type { Asset } from "@/lib/types";
 import {
   formatCurrency,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { exportAllData, importData, clearAllAssets } from "@/lib/db";
+import { exportAllData, importData, clearAllAssets } from "@/lib/data-service";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, Upload, Trash2, AlertCircle } from "lucide-react";

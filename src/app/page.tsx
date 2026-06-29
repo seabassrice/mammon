@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { getAllAssets } from "@/lib/db";
+import { getAllAssets } from "@/lib/data-service";
 import type { Asset, SubscriptionAsset } from "@/lib/types";
 import { DashboardCharts } from "@/components/dashboard-charts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

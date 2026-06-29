@@ -2,14 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 import {
   LayoutDashboard,
   Package,
   PlusCircle,
   Settings,
+  LogOut,
+  LogIn,
+  UserRound,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
+import { authClient } from "@/lib/auth-client";
 
 const navItems = [
   { href: "/", label: "概览", icon: LayoutDashboard },
@@ -20,6 +25,20 @@ const navItems = [
 
 export function Navigation() {
   const pathname = usePathname();
+  const [session, setSession] = useState<{ user: { id: string; name: string; email: string } } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    authClient.getSession().then(({ data }) => {
+      setSession(data as any);
+    }).catch(() => {}).finally(() => setLoading(false));
+  }, []);
+
+  const handleLogout = async () => {
+    await authClient.signOut();
+    setSession(null);
+    window.location.href = "/";
+  };
 
   return (
     <>
@@ -50,7 +69,32 @@ export function Navigation() {
             );
           })}
         </nav>
-        <div className="px-4 py-4 border-t">
+        <div className="px-4 py-4 border-t space-y-2">
+          {!loading && (
+            session ? (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm truncate">
+                  <UserRound className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <span className="truncate">{session.user.name || session.user.email}</span>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="p-1.5 rounded-md hover:bg-accent text-muted-foreground hover:text-accent-foreground transition-colors"
+                  title="退出登录"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+              >
+                <LogIn className="h-4 w-4" />
+                登录 / 注册
+              </Link>
+            )
+          )}
           <ThemeToggle />
         </div>
       </aside>

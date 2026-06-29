@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-import { addAsset, updateAsset, getAssetById } from "@/lib/db";
+import { addAsset, updateAsset, getAssetById } from "@/lib/data-service";
 import type {
   AssetType,
 } from "@/lib/types";
