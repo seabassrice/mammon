@@ -362,8 +362,11 @@ export default function AssetDetailPage() {
                     <Calendar className="inline h-4 w-4" />
                     {formatDate(asset.nextBillingDate)}
                     {(() => {
+                      if (!asset.nextBillingDate) return null;
+                      const billingDate = new Date(asset.nextBillingDate);
+                      if (isNaN(billingDate.getTime())) return null;
                       const daysUntil = Math.ceil(
-                        (new Date(asset.nextBillingDate).getTime() -
+                        (billingDate.getTime() -
                           Date.now()) /
                           (1000 * 60 * 60 * 24)
                       );

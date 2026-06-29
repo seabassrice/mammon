@@ -14,8 +14,10 @@ export function formatCurrency(amount: number): string {
   }).format(amount);
 }
 
-export function formatDate(dateStr: string): string {
+export function formatDate(dateStr: string | null | undefined): string {
+  if (!dateStr) return "-";
   const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return "-";
   return new Intl.DateTimeFormat("zh-CN", {
     year: "numeric",
     month: "2-digit",
@@ -27,8 +29,10 @@ export function getTodayStr(): string {
   return new Date().toISOString().split("T")[0];
 }
 
-export function getDaysUntil(dateStr: string): number {
+export function getDaysUntil(dateStr: string | null | undefined): number {
+  if (!dateStr) return Infinity;
   const target = new Date(dateStr);
+  if (isNaN(target.getTime())) return Infinity;
   const today = new Date();
   target.setHours(0, 0, 0, 0);
   today.setHours(0, 0, 0, 0);

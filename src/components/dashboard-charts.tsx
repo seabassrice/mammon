@@ -36,7 +36,9 @@ export function DashboardCharts({ assets }: DashboardChartsProps) {
   const expiringCount = assets.filter((a) => {
     if (a.type !== "subscription") return false;
     if (a.billingCycle === "once") return false;
+    if (!a.nextBillingDate) return false;
     const nextBilling = new Date(a.nextBillingDate);
+    if (isNaN(nextBilling.getTime())) return false;
     const today = new Date();
     const diffDays = (nextBilling.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
     return diffDays >= 0 && diffDays <= 7;
